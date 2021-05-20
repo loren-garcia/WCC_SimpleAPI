@@ -1,8 +1,7 @@
-const  mysql = require('mysql');
+const  mysql = require('mysql2');
 const conexao = mysql.createConnection({
     host: 'localhost',
     port: 3306,
-    database: 'api',
     user: 'root',
     password:'root',
     database: 'agendawcc'
