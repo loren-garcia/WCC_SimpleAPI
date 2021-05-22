@@ -1,10 +1,47 @@
-const { response } = require('express');
 const moment = require('moment');
 const conexao = require('../infra/conexao');
 
 class Agendamento {
 
+    deletar(id, res) {
+        
+        const sql = 'DELETE FROM agendamentos WHERE id=?';
+
+        conexao.query(sql, id, (error, results) => {
+            if(error) res.status(400).json(error);
+            res.status(201).json({
+                mensagem: `Agendamento com ${id} removido com sucesso!`
+            })
+        })
+    }
+
+    alterar(id, agendamento, res) {
+
+        const sql = 'UPDATE agendamentos SET ? WHERE id=?';
+
+        if(agendamento.data_servico) {
+            agendamento.data_servico = moment(agendamento.data_servico).format('YYYY-MM-DD');
+        }
+        conexao.query(sql, [agendamento, id], (error, results) => {
+            if(error) res.status(400).json(error);
+
+            res.status(201).json(results);
+        });
+    }
+
+    buscaPorId(id, res) {
+
+        const sql = 'SELECT * FROM agendamentos WHERE id=?';
+
+        conexao.query(sql, id, (error, results) => {
+            if(error) res.status(400).json(error);
+
+            res.status(201).json(results);
+        })
+    }
+
     listagem(res) {
+
         const sql = 'SELECT * FROM agendamentos';
 
         conexao.query(sql, (error, results) => {
@@ -43,8 +80,9 @@ class Agendamento {
         if(errors.length > 0) return res.status(400).json(errors);
 
         conexao.query(sql, agendamentoComData, (error, results) => {
-            if(error) throw error;
-            console.log(results);
+            if(error) res.status(400).json(error);
+
+            res.status(201).json(results);
         });
     }
 }
